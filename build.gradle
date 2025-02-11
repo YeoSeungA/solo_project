@@ -34,7 +34,8 @@ dependencies {
 //	implementation 'org.hibernate.search:hibernate-search-mapper-orm:6.1.4.Final' // Hibernate Search 의존성
 //	implementation 'org.hibernate.search:hibernate-search-backend-elasticsearch:6.1.4.Final' // Elasticsearch 백엔드 의존성
 //	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch' // Spring Data Elasticsearch 의존성
-
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+	implementation 'com.google.code.gson:gson'
 	implementation 'org.springframework.boot:spring-boot-starter-security'     // (2)
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
