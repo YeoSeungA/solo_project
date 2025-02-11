@@ -1,6 +1,9 @@
-package com.springboot.security;
+package com.springboot;
 
+import com.springboot.exception.BusinessLogicException;
+import com.springboot.exception.ExceptionCode;
 import com.springboot.member.entity.Member;
+import com.springboot.member.repository.MemberRepository;
 import com.springboot.security.utils.AuthorityUtils;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,9 +24,10 @@ public class MemberDetailsService implements UserDetailsService {
         this.memberRepository = memberRepository;
         this.authorityUtils = authorityUtils;
     }
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        //        credention 데이터에서 갖고옴.
+//        credention 데이터에서 갖고옴.
         Optional<Member> optionalMember = memberRepository.findByEmail(username);
         Member findMember = optionalMember.orElseThrow(()-> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
 
@@ -69,4 +73,6 @@ public class MemberDetailsService implements UserDetailsService {
             return true;
         }
     }
+
+
 }
