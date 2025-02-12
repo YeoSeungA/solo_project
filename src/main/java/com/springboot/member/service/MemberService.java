@@ -105,9 +105,9 @@ public class MemberService {
         return findMemebr;
     }
 //    member의 상태가 Member_ACTIVE 인지 확인 . 아니라면 예외를 던지자.
-    public void checkMemberActive(Member member) {
+    public void checkMemberActive(long memberId) {
 //        멤버가 존재하는지 검증
-        Member existMember = verifyFindMember(member.getMemberId());
+        Member existMember = verifyFindMember(memberId);
 //        존재하는 회원의 상태가 ACTIVE가 아닐때 예외를 던지자.
         if (existMember.getMemberStatus() != Member.MemberStatus.MEMBER_ACTIVE) {
             throw new BusinessLogicException(ExceptionCode.INACTIVE_MEMBER_FORBIDDEN);

@@ -8,6 +8,7 @@ public enum ExceptionCode {
     INACTIVE_MEMBER_FORBIDDEN(403, "Inactive member cannot perform this action"),
     QUESTION_NOT_FOUND(404, "Question not found"),
     QUESTION_EXISTS(409, "Question exists"),
+    AUTHOR_ONLY_ACCESS(403, "Only the author has access to this post"),
     ANSWER_NOT_FOUND(404, "Answer not found"),
     ANSWER_EXISTS(404, "Answer exists"),
     CANNOT_CHANGE_ORDER(403, "Order can not change"),

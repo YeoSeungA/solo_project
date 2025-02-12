@@ -2,9 +2,11 @@ package com.springboot.question.service;
 
 import com.springboot.exception.BusinessLogicException;
 import com.springboot.exception.ExceptionCode;
+import com.springboot.member.entity.Member;
 import com.springboot.member.service.MemberService;
 import com.springboot.question.entity.Question;
 import com.springboot.question.repository.QuestionRepository;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -23,7 +25,7 @@ public class QuestionService {
     public Question createQuestion(Question question) {
 //        멤버가 존재 + 글을 작성할 수 있는 활동상태인지 검증해 보자.
 //        멤버가 존재하지 않거나 member의 활동상태가 ACTIVE가 아닐때 예외를 던진다.
-        memberService.checkMemberActive(question.getMember());
+        memberService.checkMemberActive(question.getMember().getMemberId());
 
         Question saveQuestion = questionRepository.save(question);
         return saveQuestion;
@@ -48,15 +50,16 @@ public class QuestionService {
 
         return findQuestion;
     }
-//    secret 모드일 때 get
-    public Question getSecretQuestion(long questionId) {
+//    secret 모드일 때 get Controller에서 Authentication.principle로 memeber를 보내주자.
+    public Question getSecretQuestion(long questionId, Member member) {
 //        해당 question이 있는지 검증하자.
         Question findQeustion =  verifyFindQuestion(questionId);
-//        해당 member가 맞는지 검증하자.
-
-//        해당 question이 있는지 검증하자.
-        verifyFindQuestion(questionId);
+//        quesion 작성자와 로그인한 사람이 같지 않거나 권한이 ADMIN이 아닐때 예외를 던지자.
+        if(!findQeustion.getMember().getEmail().equals(member.getEmail()) || !member.getRoles().contains("ADMIN")) {
+            throw new BusinessLogicException(ExceptionCode.AUTHOR_ONLY_ACCESS);
+        }
 //        두개의 검증이 끝났다면 보여주자.
+        return findQeustion;
     }
 
 //    public 모드일 때 get
