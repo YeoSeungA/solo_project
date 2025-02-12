@@ -4,12 +4,14 @@ import com.springboot.exception.BusinessLogicException;
 import com.springboot.exception.ExceptionCode;
 import com.springboot.member.entity.Member;
 import com.springboot.member.repository.MemberRepository;
+import com.springboot.question.entity.Question;
 import com.springboot.security.utils.AuthorityUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -71,7 +73,8 @@ public class MemberService {
     public Page<Member> findMembers(int page, int size) {
         return memberRepository.findAll(PageRequest.of(page, size, Sort.by("memberId").descending()));
     }
-//    회원 삭제
+//    회원 삭제 member 삭제와 question의 상태 변화는 중간에 끊기면 안되기에 transactional로 관리하자.
+    @Transactional //
     public void deleteMember(long memberId) {
 //        존재하는 member인지 검증하자.
         Member findMember = verifyFindMember(memberId);
@@ -79,6 +82,12 @@ public class MemberService {
         findMember.setMemberStatus(Member.MemberStatus.MEMBER_QUIT);
 //        휴면상태로 member을 저장. (DB에 실제 삭제X. 상태만 바뀐째로 저장된다.)
         memberRepository.save(findMember);
+//        question의 상태를 바꾸자. memberStatus가 탈퇴상태라면
+        if(findMember.getMemberStatus() == Member.MemberStatus.MEMBER_QUIT) {
+//            해당 member의
+            findMember.getQuestions().stream()
+                    .forEach(question -> question.setQuestionStatus(Question.QuestionStatus.QUESTION_DEACTIVED));
+        }
     }
 
 //    검증 메서드 create시 존재하지 않는 member여야 create이 가능하다.
@@ -95,4 +104,15 @@ public class MemberService {
                 new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
         return findMemebr;
     }
+//    member의 상태가 Member_ACTIVE 인지 확인 . 아니라면 예외를 던지자.
+    public void checkMemberActive(Member member) {
+//        멤버가 존재하는지 검증
+        Member existMember = verifyFindMember(member.getMemberId());
+//        존재하는 회원의 상태가 ACTIVE가 아닐때 예외를 던지자.
+        if (existMember.getMemberStatus() != Member.MemberStatus.MEMBER_ACTIVE) {
+            throw new BusinessLogicException(ExceptionCode.INACTIVE_MEMBER_FORBIDDEN);
+        }
+    }
+
+
 }

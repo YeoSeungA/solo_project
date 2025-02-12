@@ -26,7 +26,7 @@ public class AuthorityUtils {
     //    데이터베이스에서 가져온 role을 Security에서 권한부여시 사용되는 GrantedAuthority로 바꾸기
     public List<GrantedAuthority> createAuthorities(List<String> roles) {
         List<GrantedAuthority> authorities = roles.stream()
-                .map(role -> new SimpleGrantedAuthority("ROLES_" + role))
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
                 .collect(Collectors.toList());
         return authorities;
     }

@@ -67,6 +67,12 @@ public class SecurityConfiguration {
                         .antMatchers(HttpMethod.GET,"/*/members").hasRole("ADMIN")
                         .antMatchers(HttpMethod.GET,"/*/members/**").hasAnyRole("USER","ADMIN")
                         .antMatchers(HttpMethod.DELETE,"/*/members/**").hasRole("USER")
+
+                        .antMatchers(HttpMethod.POST,"/*/questions").hasRole("USER")
+                        .antMatchers(HttpMethod.PATCH, "/*/members/**").hasRole("USER")
+                        .antMatchers(HttpMethod.GET,"/*/members").hasRole("ADMIN")
+                        .antMatchers(HttpMethod.GET,"/*/members/**").hasAnyRole("USER","ADMIN")
+                        .antMatchers(HttpMethod.DELETE,"/*/members/**").hasRole("USER")
                         .anyRequest().permitAll());
 
         return http.build();
@@ -98,7 +104,7 @@ public class SecurityConfiguration {
 //            fiter를 매니저에 등록하자.
             JwtAuthenticationFilter jwtAuthenticationFilter= new JwtAuthenticationFilter(authenticationManager, jwtTokenizer);
 //            특정 url로의 접근에만 활성화되게 지정한다. 변경안하면 default는 /login 이다.
-            jwtAuthenticationFilter.setFilterProcessesUrl("/v11/auth/login");
+            jwtAuthenticationFilter.setFilterProcessesUrl("/v12/auth/login");
 //            new MemberAuthenticationSuccessHandler() 얘는 여기서 쓰기 때문에 굳이 DI하지 않아요
             jwtAuthenticationFilter.setAuthenticationSuccessHandler(new MemberAuthenticationSuccessHandler());
             jwtAuthenticationFilter.setAuthenticationFailureHandler(new MemberAuthenticationFailureHandler());

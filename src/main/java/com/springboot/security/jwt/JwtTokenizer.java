@@ -48,6 +48,7 @@ public class JwtTokenizer {
                 .setSubject(subject)
                 .setIssuedAt(Calendar.getInstance().getTime())
                 .setExpiration(expiration)
+                .signWith(key)
                 .compact();
     }
 

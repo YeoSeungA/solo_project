@@ -28,5 +28,9 @@ public class MemberDto {
         private String password;
 
         private Member.MemberStatus memberStatus;
+
+        public void setMemberId(long memberId) {
+            this.memberId = memberId;
+        }
     }
 }

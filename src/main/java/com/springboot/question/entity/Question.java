@@ -42,6 +42,9 @@ public class Question {
     @OneToMany(mappedBy = "question")
     private List<Like> likes = new ArrayList<>();
 
+    @Column(nullable = false)
+    private int likeCount;
+
 //    질문 등록될 때의 날짜 생성
     @Column(nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
