@@ -27,6 +27,7 @@ public class Member {
     @Column(nullable = false)
     private String password;
 //    Question 리스트
+    @Column(nullable = false)
     @OneToMany(mappedBy = "member", cascade = CascadeType.PERSIST)
     private List<Question> questions = new ArrayList<>();
 
@@ -34,17 +35,17 @@ public class Member {
     private List<Answer> answers = new ArrayList<>();
 //    view와 다대일 관계 . 영속성 전이는 X. count만 알면 되기에
     @OneToMany(mappedBy = "member")
-    private Views views;
+    private List<Views> views = new ArrayList<>();
 //    like와 다대 일 관계, 영속성 전이는 X. count만 알면 되기에
     @OneToMany(mappedBy = "member")
-    private Like like;
+    private List<Like> like = new ArrayList<>();
 
 // role을 추가한다. (권한)
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
-    private MemberStatus memberStatus = MemberStatus.MEMBER_SLEEP;
+    private MemberStatus memberStatus = MemberStatus.MEMBER_ACTIVE;
 
 //  question의 입장에서도 연결이 필요하기에 question이 갖고 있는 member에
 //  나 자신인 member를 추가한다.

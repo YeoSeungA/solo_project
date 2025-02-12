@@ -10,6 +10,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor
+@Table(name = "Love")
 public class Like {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

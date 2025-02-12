@@ -10,6 +10,8 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Setter
 @Getter
@@ -35,10 +37,10 @@ public class Question {
     private Answer answer;
 // Views와 다대 일 관계, 영속성 전이는 X. view의 count만 사용하면 되기에.. 필요하면 영속성 전이를 넣어야 한다.
     @OneToMany(mappedBy = "question")
-    private Views views;
+    private List<Views> views = new ArrayList<>();
 //   Like와 다대 일 관계, 영속성 전이는 X. like의 count 만 사용되게 하자.
     @OneToMany(mappedBy = "question")
-    private Like like;
+    private List<Like> likes = new ArrayList<>();
 
 //    질문 등록될 때의 날짜 생성
     @Column(nullable = false)
