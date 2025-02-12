@@ -40,7 +40,11 @@ public class MemberDetailsService implements UserDetailsService {
             setMemberId(member.getMemberId());
             setEmail(member.getEmail());
             setPassword(member.getPassword());
+            setQuestions(member.getQuestions());
+            setViews(member.getViews());
+            setLike(member.getLike());
             setRoles(member.getRoles());
+            setMemberStatus(member.getMemberStatus());
         }
 
         @Override

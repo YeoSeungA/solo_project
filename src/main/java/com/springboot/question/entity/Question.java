@@ -1,11 +1,13 @@
 package com.springboot.question.entity;
 
+import com.springboot.answer.entity.Answer;
+import com.springboot.like.entity.Like;
 import com.springboot.member.entity.Member;
+import com.springboot.views.entity.Views;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -25,6 +27,16 @@ public class Question {
     @ManyToOne
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
+
+    @OneToOne
+    @JoinColumn(name = "ANSWER_ID")
+    private Answer answer;
+// Views와 다대 일 관계, 영속성 전이는 X. view의 count만 사용하면 되기에.. 필요하면 영속성 전이를 넣어야 한다.
+    @OneToMany(mappedBy = "question")
+    private Views views;
+//   Like와 다대 일 관계, 영속성 전이는 X. like의 count 만 사용되게 하자.
+    @OneToMany(mappedBy = "question")
+    private Like like;
 
 //    질문 등록될 때의 날짜 생성
     @Column(nullable = false)

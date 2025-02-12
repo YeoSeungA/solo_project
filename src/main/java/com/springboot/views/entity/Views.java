@@ -1,4 +1,4 @@
-package com.springboot.like.entity;
+package com.springboot.views.entity;
 
 import com.springboot.member.entity.Member;
 import com.springboot.question.entity.Question;
@@ -10,15 +10,15 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor
-public class Like {
+public class Views {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long likeId;
+    private Long viewsId;
 
     @Column(nullable = false)
-    private int likeCount;
+    private int viewsCount;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     @JoinColumn(name = "QUESTION_ID")
     private Question question;
 

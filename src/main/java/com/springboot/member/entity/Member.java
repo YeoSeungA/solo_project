@@ -1,14 +1,18 @@
 package com.springboot.member.entity;
 
 import com.springboot.answer.entity.Answer;
+import com.springboot.like.entity.Like;
 import com.springboot.question.entity.Question;
+import com.springboot.views.entity.Views;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Setter
 @Getter
 @NoArgsConstructor
 @Entity
@@ -28,6 +32,13 @@ public class Member {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.PERSIST)
     private List<Answer> answers = new ArrayList<>();
+//    view와 다대일 관계 . 영속성 전이는 X. count만 알면 되기에
+    @OneToMany(mappedBy = "member")
+    private Views views;
+//    like와 다대 일 관계, 영속성 전이는 X. count만 알면 되기에
+    @OneToMany(mappedBy = "member")
+    private Like like;
+
 // role을 추가한다. (권한)
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles = new ArrayList<>();

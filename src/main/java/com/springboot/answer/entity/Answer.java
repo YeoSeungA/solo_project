@@ -1,6 +1,7 @@
 package com.springboot.answer.entity;
 
 import com.springboot.member.entity.Member;
+import com.springboot.question.entity.Question;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -19,7 +20,7 @@ public class Answer {
 
     @Column(nullable = false)
     private String answerContent;
-
+//영속성 전이 실행.
     @ManyToOne
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
