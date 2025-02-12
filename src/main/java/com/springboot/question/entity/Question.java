@@ -6,10 +6,12 @@ import com.springboot.member.entity.Member;
 import com.springboot.views.entity.Views;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+@Setter
 @Getter
 @NoArgsConstructor
 @Entity
