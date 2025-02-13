@@ -73,14 +73,25 @@ public class QuestionService {
     }
 
     public void deleteQuestion(long questionId, Authentication authentication) {
-//        1. 질문삭제는 질문을 등록한 회원만 가능하다.
-//        1-1. authenticaion으로 emil 을 불러오자
-//        1-2. questionId를 통해 question을 구해오자.
-//        1-3. question의 memberId를 구하자
-//        1-4. memberId를 통해 memeber를 구하자.
-//        1-5. member의 email을 구하자.
-//        1-6. 현재 로그인한 사람과 question을 작성한 사람의 email을 비교하자.
-//        1-7. 같을 때만 delete가능하다. 다르다면 예외를 던지자.
+//        존재하는 질문인지 확인 + 삭제된 질문은 삭제할 수 없다  검증.
+        Question question = checkQuestionState(questionId);
+//        1. 질문삭제는 질문을 등록한 회원만 가능하다. - 다른 메서드로 따로 빼도록 하자
+//        1-1. authenticaion으로 email 을 불러오자
+        String username = authentication.getPrincipal().toString();
+//        1-2. memberEmail를 통해 memeber를 구하자.
+        Member member = memberService.findByEmailToMember(username);
+//        1-3 로그인한 memberId를 구하자.
+        long loginMemberId = member.getMemberId();
+//        1-4. question의 memberId를 구하자
+        long questionMemberId = question.getMember().getMemberId();
+//        1-5. 현재 로그인한 사람과 question을 작성한 사람의 email을 비교하자.
+//        같을 때만 delete가능하다. 다르다면 예외를 던지자.
+        if(loginMemberId != questionMemberId) {
+            throw new BusinessLogicException(ExceptionCode.AUTHOR_ONLY_ACCESS);
+        }
+//        질문삭제시, 테이블에서 row가 삭제되는게 아닌 질문 상태값이 바뀐다.
+        question.setQuestionStatus(Question.QuestionStatus.QUESTION_DELETED);
+        questionRepository.save(question);
     }
 
 

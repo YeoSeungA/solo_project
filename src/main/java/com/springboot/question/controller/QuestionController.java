@@ -6,6 +6,8 @@ import com.springboot.question.dto.QuestionResponseDto;
 import com.springboot.question.entity.Question;
 import com.springboot.question.mapper.QuestionMapper;
 import com.springboot.question.service.QuestionService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -56,6 +58,20 @@ public class QuestionController {
         QuestionResponseDto questionResponseDto = questionMapper.questionToQuestionResponseDto(question);
 
         return new ResponseEntity(questionResponseDto, HttpStatus.OK);
+    }
+
+    @GetMapping
+    public Page<Question> getQuestions(@Positive @RequestParam int page,
+                                       @Positive @RequestParam int size) {
+//        Page<Question> questionPage = questionService.
+        return null;
+    }
+
+    @DeleteMapping("/{question-id}")
+    public ResponseEntity deleteQuestion(@Positive @PathVariable("question-id") long questionId,
+                                         Authentication authentication) {
+        questionService.deleteQuestion(questionId, authentication);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }
