@@ -10,6 +10,7 @@ import com.springboot.question.repository.QuestionRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -58,27 +59,31 @@ public class QuestionService {
 
         return findQuestion;
     }
+
+    public Question getQuestion(long questionId, Authentication authentication) {
+//        삭제된 질문이거나 없는 질문이면 예외를 던진다.
+        Question question = checkQuestionState(questionId);
+//        만약 question이 secret이라면 getSecret으로 조회하자.
+        if(question.getQuestionPublicStatus() == Question.QuestionPublicStatus.SECRET) {
+            return getSecretQuestion(questionId, authentication);
+        }
+//        question이 public이라면 로그인한 회원과 관리자 모두 조회 가능하다.
+        return question;
+    }
 //    secret 모드일 때 get Controller에서 Authentication.principle로 memeber를 보내주자.
     public Question getSecretQuestion(long questionId, Authentication authentication) {
 //        해당 question이 존재하는지 + 삭제 상태인지 검증해보자. question이 없거나 삭제상태이면 예외를 던진다.
-        Question findQeustion =  checkQuestionState(questionId);
-//        quesion 작성자와 로그인한 사람이 같지 않거나 권한이 ADMIN이 아닐때 예외를 던지자.
-        Member member = (Member) authentication.getPrincipal();
-        if(!findQeustion.getMember().getEmail().equals(member.getEmail()) || !member.getRoles().contains("ADMIN")) {
+        Question findQuestion =  checkQuestionState(questionId);
+        String username = authentication.getPrincipal().toString();
+//        username = email로 member 객체를 불러오자.
+        Member member = memberService.findByEmailToMember(username);
+//        question 작성자와 로그인한 사람이 같지 않고 권한이 ADMIN이 아닐때 예외를 던지자.
+        if(!findQuestion.getMember().getEmail().equals(username) && !member.getRoles().contains("ADMIN")) {
             throw new BusinessLogicException(ExceptionCode.AUTHOR_ONLY_ACCESS);
         }
 //         검증이 끝났다면 보여주자.
-        return findQeustion;
-    }
-
-//    public 모드일 때 get
-    public Question getPublicQuestion(long questionId) {
-//        해당 question이 있는지 + 삭제 상태인지 검증
-        Question findQuestion = checkQuestionState(questionId);
         return findQuestion;
     }
-
-
 
 //    존재하는 question인지 검증해보자
     public Question verifyFindQuestion(long questionId) {
@@ -92,6 +97,8 @@ public class QuestionService {
     public Optional<Answer> checkAnswerToQuestion(long questionId) {
 //        Id로 question을 찾자
        Question findQuestion = verifyFindQuestion(questionId);
+//       Question의 answerid와 answer의 id가 같다면 반환 하자. 같은게 없다면 아무것도 반환x.
+
 //       question에 answer이 있다면 반환하고 없다면 그냥 반환하지 말자.
        return Optional.ofNullable(findQuestion.getAnswer());
     }

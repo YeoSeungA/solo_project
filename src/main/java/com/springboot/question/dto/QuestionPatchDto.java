@@ -20,4 +20,8 @@ public class QuestionPatchDto {
     private Question.QuestionStatus questionStatus;
 
     private Question.QuestionPublicStatus questionPublicStatus;
+
+    public void setQuestionId(long questionId) {
+        this.questionId = questionId;
+    }
 }

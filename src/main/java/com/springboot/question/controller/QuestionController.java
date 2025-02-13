@@ -6,16 +6,14 @@ import com.springboot.question.dto.QuestionResponseDto;
 import com.springboot.question.entity.Question;
 import com.springboot.question.mapper.QuestionMapper;
 import com.springboot.question.service.QuestionService;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
 
 @RestController
 @RequestMapping("/v12/questions")
@@ -33,6 +31,8 @@ public class QuestionController {
     @PostMapping
     public ResponseEntity postQuestion(@Valid @RequestBody QuestionPostDto questionPostDto,
                                        Authentication authentication) {
+////        public상태는 대문자로 변환하자.
+//        questionPostDto.getQuestionPublicStatus().toString().toUpperCase();
         Question question = questionService.createQuestion(questionMapper.questionPostDtoToQuestion(questionPostDto),authentication);
         QuestionResponseDto questionResponseDto = questionMapper.questionToQuestionResponseDto(question);
 
@@ -40,11 +40,22 @@ public class QuestionController {
     }
 
     @PatchMapping("/{question-id}")
-    public ResponseEntity patchQuestion(@Valid @RequestBody QuestionPatchDto questionPatchDto) {
+    public ResponseEntity patchQuestion(@PathVariable("question-id") @Valid long questionId,
+                                        @Valid @RequestBody QuestionPatchDto questionPatchDto) {
+        questionPatchDto.setQuestionId(questionId);
         Question question = questionService.updateQuestion(questionMapper.questionPatchDtoToQuestion(questionPatchDto));
         QuestionResponseDto questionResponseDto = questionMapper.questionToQuestionResponseDto(question);
 
         return new ResponseEntity<>(questionResponseDto, HttpStatus.OK);
+    }
+
+    @GetMapping("/{question-id}")
+    public ResponseEntity getQuestion(@Valid @PathVariable("question-id") long questionId,
+                                      Authentication authentication) {
+        Question question = questionService.getQuestion(questionId, authentication);
+        QuestionResponseDto questionResponseDto = questionMapper.questionToQuestionResponseDto(question);
+
+        return new ResponseEntity(questionResponseDto, HttpStatus.OK);
     }
 
 }

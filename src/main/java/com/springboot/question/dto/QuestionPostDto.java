@@ -15,6 +15,6 @@ public class QuestionPostDto {
     @NotBlank
     private String content;
 
-//    private Question.QuestionPublicStatus questionPublicStatus;
+    private Question.QuestionPublicStatus questionPublicStatus;
 
 }

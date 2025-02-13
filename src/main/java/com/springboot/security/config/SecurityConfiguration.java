@@ -69,10 +69,10 @@ public class SecurityConfiguration {
                         .antMatchers(HttpMethod.DELETE,"/*/members/**").hasRole("USER")
 
                         .antMatchers(HttpMethod.POST,"/*/questions").hasRole("USER")
-                        .antMatchers(HttpMethod.PATCH, "/*/members/**").hasRole("USER")
-                        .antMatchers(HttpMethod.GET,"/*/members").hasRole("ADMIN")
-                        .antMatchers(HttpMethod.GET,"/*/members/**").hasAnyRole("USER","ADMIN")
-                        .antMatchers(HttpMethod.DELETE,"/*/members/**").hasRole("USER")
+                        .antMatchers(HttpMethod.PATCH, "/*/members/**").hasAnyRole("USER","ADMIN")
+                        .antMatchers(HttpMethod.GET,"/*/questions").hasRole("ADMIN")
+                        .antMatchers(HttpMethod.GET,"/*/questions/**").hasAnyRole("USER","ADMIN")
+                        .antMatchers(HttpMethod.DELETE,"/*/questions/**").hasRole("USER")
                         .anyRequest().permitAll());
 
         return http.build();

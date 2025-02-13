@@ -53,7 +53,7 @@ public class Question {
     private QuestionStatus questionStatus = QuestionStatus.QUESTION_REGISTERED;
 //    공개 글의 여부
     @Enumerated(EnumType.STRING)
-    private QuestionPublicStatus questionPublicStatus = QuestionPublicStatus.PUBLIC;
+    private QuestionPublicStatus questionPublicStatus;
 //    member의 입장에서도 연결이 필요하기에
 //    member가 갖고 있는 questions(List)에 나 자신 question을 추가한다.
     public void addMemberQuestion(Member member) {
