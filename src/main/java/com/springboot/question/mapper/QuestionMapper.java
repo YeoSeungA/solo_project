@@ -13,5 +13,5 @@ public interface QuestionMapper {
     Question questionPostDtoToQuestion(QuestionPostDto postDto);
     Question questionPatchDtoToQuestion(QuestionPatchDto patchDto);
     QuestionResponseDto questionToQuestionResponseDto(Question question);
-    List<QuestionResponseDto> questionToQuestionResponseDtos(Question question);
+//    List<QuestionResponseDto> questionToQuestionResponseDtos(Question question);
 }

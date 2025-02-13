@@ -10,6 +10,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,11 +31,12 @@ public class QuestionController {
     }
 
     @PostMapping
-    public ResponseEntity postQuestion(@Valid @RequestBody QuestionPostDto questionPostDto) {
-        Question question = questionService.createQuestion(questionMapper.questionPostDtoToQuestion(questionPostDto));
+    public ResponseEntity postQuestion(@Valid @RequestBody QuestionPostDto questionPostDto,
+                                       Authentication authentication) {
+        Question question = questionService.createQuestion(questionMapper.questionPostDtoToQuestion(questionPostDto),authentication);
         QuestionResponseDto questionResponseDto = questionMapper.questionToQuestionResponseDto(question);
 
-        return new ResponseEntity(questionResponseDto, HttpStatus.CREATED);
+        return new ResponseEntity<>(questionResponseDto, HttpStatus.CREATED);
     }
 
     @PatchMapping("/{question-id}")

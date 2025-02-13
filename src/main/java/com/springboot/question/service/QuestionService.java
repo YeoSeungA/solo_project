@@ -23,11 +23,11 @@ public class QuestionService {
     }
 
 //    질문을 등록해보자.
-    public Question createQuestion(Question question) {
+    public Question createQuestion(Question question, Authentication authentication) {
 //        멤버가 존재 + 글을 작성할 수 있는 활동상태인지 검증해 보자.
 //        멤버가 존재하지 않거나 member의 활동상태가 ACTIVE가 아닐때 예외를 던진다.
 //        getMember만 하면 id만
-        memberService.checkMemberActive(question.getMember().getMemberId());
+        memberService.checkMemberActive((String)authentication.getPrincipal());
 
         Question saveQuestion = questionRepository.save(question);
         return saveQuestion;

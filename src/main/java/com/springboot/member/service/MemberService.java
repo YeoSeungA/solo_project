@@ -104,10 +104,18 @@ public class MemberService {
                 new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
         return findMemebr;
     }
+
+//    emil로 멤버의 존재여부를 찾고 찾은 Memebr 객체를 반환하자.
+    public Member findByEmailToMember(String email) {
+        Optional<Member> optionalMember = memberRepository.findByEmail(email);
+        Member findMember = optionalMember.orElseThrow(() ->
+                new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+        return findMember;
+    }
 //    member의 상태가 Member_ACTIVE 인지 확인 . 아니라면 예외를 던지자.
-    public void checkMemberActive(long memberId) {
+    public void checkMemberActive(String email) {
 //        멤버가 존재하는지 검증
-        Member existMember = verifyFindMember(memberId);
+        Member existMember = findByEmailToMember(email);
 //        존재하는 회원의 상태가 ACTIVE가 아닐때 예외를 던지자.
         if (existMember.getMemberStatus() != Member.MemberStatus.MEMBER_ACTIVE) {
             throw new BusinessLogicException(ExceptionCode.INACTIVE_MEMBER_FORBIDDEN);
