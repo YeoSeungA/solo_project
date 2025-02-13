@@ -54,7 +54,7 @@ public class QuestionController {
     @GetMapping("/{question-id}")
     public ResponseEntity getQuestion(@Valid @PathVariable("question-id") long questionId,
                                       Authentication authentication) {
-        Question question = questionService.getQuestion(questionId, authentication);
+        Question question = questionService.findQuestion(questionId, authentication);
         QuestionResponseDto questionResponseDto = questionMapper.questionToQuestionResponseDto(question);
 
         return new ResponseEntity(questionResponseDto, HttpStatus.OK);
@@ -62,8 +62,9 @@ public class QuestionController {
 
     @GetMapping
     public Page<Question> getQuestions(@Positive @RequestParam int page,
-                                       @Positive @RequestParam int size) {
-//        Page<Question> questionPage = questionService.
+                                       @Positive @RequestParam int size,
+                                       @Positive @RequestParam String sort) {
+        Page<Question> questionPage = questionService.findQuestions(page,size, sort);
         return null;
     }
 

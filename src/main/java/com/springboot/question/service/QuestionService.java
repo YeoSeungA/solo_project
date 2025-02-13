@@ -7,6 +7,9 @@ import com.springboot.member.entity.Member;
 import com.springboot.member.service.MemberService;
 import com.springboot.question.entity.Question;
 import com.springboot.question.repository.QuestionRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -61,7 +64,7 @@ public class QuestionService {
         return findQuestion;
     }
 
-    public Question getQuestion(long questionId, Authentication authentication) {
+    public Question findQuestion(long questionId, Authentication authentication) {
 //        삭제된 질문이거나 없는 질문이면 예외를 던진다.
         Question question = checkQuestionState(questionId);
 //        만약 question이 secret이라면 getSecret으로 조회하자.
@@ -70,6 +73,10 @@ public class QuestionService {
         }
 //        question이 public이라면 로그인한 회원과 관리자 모두 조회 가능하다.
         return question;
+    }
+
+    public Page<Question> findQuestions(int page, int size) {
+        return questionRepository.findAll(PageRequest.of(page, size))
     }
 
     public void deleteQuestion(long questionId, Authentication authentication) {
