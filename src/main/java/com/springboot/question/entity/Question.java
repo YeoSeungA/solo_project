@@ -46,7 +46,7 @@ public class Question {
     private int likeCount;
 
 //    질문 등록될 때의 날짜 생성
-    @Column(nullable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 //      질문 상태 값 질문 생성시 초기 상태값은 QUESTION_REGISTERED 이다.
     @Enumerated(EnumType.STRING)

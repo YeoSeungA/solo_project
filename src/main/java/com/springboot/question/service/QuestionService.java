@@ -28,6 +28,12 @@ public class QuestionService {
 //        멤버가 존재하지 않거나 member의 활동상태가 ACTIVE가 아닐때 예외를 던진다.
 //        getMember만 하면 id만
         memberService.checkMemberActive((String)authentication.getPrincipal());
+//        emil로 member객체를 찾고 memberId를 뽑아내서 저장하자.
+        Member member = memberService.findByEmailToMember((String)authentication.getPrincipal());
+        question.setMember(member);
+//        question.getMember().setMemberId(member.getMemberId());
+//        long memberId = member.getMemberId();
+//        question.getMember().setMemberId(memberId);
 
         Question saveQuestion = questionRepository.save(question);
         return saveQuestion;
