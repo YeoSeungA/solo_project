@@ -48,7 +48,7 @@ public class QuestionController {
                                         @Valid @RequestBody QuestionPatchDto questionPatchDto,
                                         Authentication authentication) {
         questionPatchDto.setQuestionId(questionId);
-        Question question = questionService.updateQuestion(questionMapper.questionPatchDtoToQuestion(questionPatchDto));
+        Question question = questionService.updateQuestion(questionMapper.questionPatchDtoToQuestion(questionPatchDto), authentication);
         QuestionResponseDto questionResponseDto = questionMapper.questionToQuestionResponseDto(question);
 
         return new ResponseEntity<>(questionResponseDto, HttpStatus.OK);

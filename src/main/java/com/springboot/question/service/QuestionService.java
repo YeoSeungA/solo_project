@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.springboot.question.entity.Question.QuestionStatus.QUESTION_ANSWERED;
 import static com.springboot.question.entity.Question.QuestionStatus.QUESTION_DELETED;
 
 @Service
@@ -47,40 +48,46 @@ public class QuestionService {
     }
 //    질문을 수정해보자
     public Question updateQuestion(Question question,Authentication authentication) {
+//        존재하는 question인지 확인해보자.
+        Question findQuestion = verifyFindQuestion(question.getQuestionId());
+//        답변 완료된 질문은 수정할 수 없다.
+        if(question.getQuestionStatus() == QUESTION_ANSWERED) {
+            throw new BusinessLogicException(ExceptionCode.CANNOT_CHANGE_QUESTION);
+        }
+
 //        authentication으로 로그인한 사람이 글의 작성자가 맞는지 id로 비교하자.
         long memberId = memberService.memberIdFormAuthentication(authentication);
 //        question 작성자의 id
-        long writerId = question.getMember().getMemberId();
-//        둘이 같다면 수정이 가능하고 아니라면 예외를 던지자.
-        if(memberId != writerId) {
-            throw new BusinessLogicException(ExceptionCode.AUTHOR_ONLY_ACCESS);
-        }
-
-//        존재하는 question인지 확인해보자.
-        Question findQuestion = verifyFindQuestion(question.getQuestionId());
-
-//        제목이 수정될 수 있다.
-        Optional.ofNullable(findQuestion.getTitle())
-                .ifPresent(title -> findQuestion.setTitle(title));
-//        내용이 수정 될 수 있다.
-        Optional.ofNullable(findQuestion.getContent())
-                .ifPresent(content -> findQuestion.setContent(content));
+//        아래 nullPointException이 발생
+        long questionMemberId = findQuestion.getMember().getMemberId();
 //        질문 상태가 수정될 수 있다.
 //        QUESTION_ANSWERED 로의 변경은 관리자만 가능하다.
 //    QUESTION_ANSWERED 상태변경이 들어오면, 권한을 확인하자.
-        if(question.getQuestionStatus() == Question.QuestionStatus.QUESTION_ANSWERED) {
-            if(!authentication.getAuthorities().contains("ADMIN")) {
-
+        if(findQuestion.getQuestionStatus() == Question.QuestionStatus.QUESTION_ANSWERED) {
+            if(!authentication.getAuthorities().contains("ROLE_ADMIN")) {
+                new BusinessLogicException(ExceptionCode.ADMIN_ONLY_ACCESS);
             }
         }
-        Optional.ofNullable(findQuestion.getQuestionStatus())
-                .ifPresent(questionStatus -> findQuestion.setQuestionStatus(questionStatus));
+//        둘이 같다면 수정이 가능하고 아니라면 예외를 던지자.
+        if(memberId == questionMemberId) {
+//            질문의 내용과 제목은 질문을 등록한 사람만 수정할 수 있다.
+//        제목이 수정될 수 있다.
+            Optional.ofNullable(question.getTitle())
+                    .ifPresent(title -> findQuestion.setTitle(title));
+//        내용이 수정 될 수 있다.
+            Optional.ofNullable(question.getContent())
+                    .ifPresent(content -> findQuestion.setContent(content));
+            Optional.ofNullable(findQuestion.getQuestionStatus())
+                    .ifPresent(questionStatus -> findQuestion.setQuestionStatus(questionStatus));
 //        질문의 공개여부가 수정될 수 있다.
-        Optional.ofNullable(findQuestion.getQuestionPublicStatus())
-                .ifPresent(questionPublicStatus -> findQuestion.setQuestionPublicStatus(questionPublicStatus));
-        Question patchQuestion = questionRepository.save(findQuestion);
+            Optional.ofNullable(question.getQuestionPublicStatus())
+                    .ifPresent(questionPublicStatus -> findQuestion.setQuestionPublicStatus(questionPublicStatus));
+            Question patchQuestion = questionRepository.save(findQuestion);
 
-        return findQuestion;
+            return patchQuestion;
+        } else {
+            throw new BusinessLogicException(ExceptionCode.AUTHOR_ONLY_ACCESS);
+        }
     }
 
     public Question findQuestion(long questionId, Authentication authentication) {

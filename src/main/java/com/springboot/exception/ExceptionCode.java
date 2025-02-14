@@ -11,7 +11,8 @@ public enum ExceptionCode {
     AUTHOR_ONLY_ACCESS(403, "Only the author has access to this post"),
     ANSWER_NOT_FOUND(404, "Answer not found"),
     ANSWER_EXISTS(404, "Answer exists"),
-    CANNOT_CHANGE_ORDER(403, "Order can not change"),
+    ADMIN_ONLY_ACCESS(403,"Only the administrators can access this"),
+    CANNOT_CHANGE_QUESTION(400,"This Question is already completed and cannot be edited"),
     NOT_IMPLEMENTATION(501, "Not Implementation"),
     INVALID_MEMBER_STATUS(400, "Invalid member status");
 
