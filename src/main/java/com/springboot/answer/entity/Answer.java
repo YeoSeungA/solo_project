@@ -24,8 +24,16 @@ public class Answer {
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
 //    Question과 1대 1 관계
-    @OneToOne(mappedBy = "answer")
+    @OneToOne(/*mappedBy = "answer"*/)
     private Question question;
+
+    @Enumerated(EnumType.STRING)
+    private AnswerStatus answerStatus;
+
+    public enum AnswerStatus {
+        PUBLIC,
+        SECRET
+    }
 
     public void addMemberAnswer(Member member) {
         this.member = member;

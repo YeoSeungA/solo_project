@@ -10,7 +10,7 @@ public enum ExceptionCode {
     QUESTION_EXISTS(409, "Question exists"),
     AUTHOR_ONLY_ACCESS(403, "Only the author has access to this post"),
     ANSWER_NOT_FOUND(404, "Answer not found"),
-    ANSWER_EXISTS(404, "Answer exists"),
+    ANSWER_EXISTS(409, "Answer exists"),
     ADMIN_ONLY_ACCESS(403,"Only the administrators can access this"),
     CANNOT_CHANGE_QUESTION(400,"This Question is already completed and cannot be edited"),
     NOT_IMPLEMENTATION(501, "Not Implementation"),
