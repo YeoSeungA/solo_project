@@ -31,13 +31,19 @@ public class AnswerService {
     }
 
     @Transactional
-    public Answer createAnswer(Answer answer, Authentication authentication) {
-//         멤버가 있는지 + question이 존재하는지 확인하자.
-        Question question = verifyExistAnswer(answer);
+    public Answer createAnswer(long questionId, Answer answer, Authentication authentication) {
+//         멤버를 구하자!
+        long memberId = memberService.memberIdFormAuthentication(authentication);
+        Member member = memberService.verifyFindMember(memberId);
+        answer.setMember(member);
+//        질문을 구하자!
+        Question question = verifyExistAnswer(answer, questionId);
+        answer.setQuestion(question);
+
 //        멤버의 권한이 admin인지 확인하자.
-        verifyAuthorities(authentication);
+        verifyAuthorities(answer.getMember());
 //        답변은 한 건만 등록할 수 있다.
-        if(answer.getQuestion().getQuestionId() == null) {
+        if(question.getQuestionStatus() == Question.QuestionStatus.QUESTION_REGISTERED) {
 //            question의 상태에 따른다. public 이면 public
             if(question.getQuestionPublicStatus() == Question.QuestionPublicStatus.PUBLIC) {
                 answer.setAnswerStatus(Answer.AnswerStatus.PUBLIC);
@@ -46,14 +52,19 @@ public class AnswerService {
 //            답변 등록시, 질문의 상태값이 QUESTION_ANSWERED로 변경되야 한다.
             answer.getQuestion().setQuestionStatus(Question.QuestionStatus.QUESTION_ANSWERED);
            Answer result = answerRepository.save(answer);
+           return result;
         } throw new BusinessLogicException(ExceptionCode.ANSWER_EXISTS);
     }
 
     public Answer updateAnswer(Answer answer, Authentication authentication) {
+//        Member를 뽑자.
+        long memberId = memberService.memberIdFormAuthentication(authentication);
+        Member member = memberService.findMember(memberId);
+        answer.setMember(member);
 //        answer가 존재하는지 확인하자
         Answer findAnswer = verifyAnswer(answer.getAnswerId());
 //        권한을 확인하자.
-        verifyAuthorities(authentication);
+        verifyAuthorities(answer.getMember());
 //        관리자만이 수정할 수 있다.
         Optional.ofNullable(answer.getContent())
                 .ifPresent(content -> findAnswer.setContent(content));
@@ -64,20 +75,17 @@ public class AnswerService {
 
 
 //    검증 로직
-    public Question verifyExistAnswer(Answer answer) {
+    public Question verifyExistAnswer(Answer answer, long questionId) {
 //        1. member가 존재하는지 - 존재X 예외
         memberService.verifyFindMember(answer.getMember().getMemberId());
 //        2. question이 존재하는지.
-        Question question = questionService.verifyFindQuestion(answer.getQuestion().getQuestionId());
+        Question question = questionService.verifyFindQuestion(questionId);
         return question;
     }
 //    권한을 갖고 있는가
-    public void verifyAuthorities(Authentication authentication) {
-        //        멤버의 권한이 admin인지 확인하자.
-        List<String> roles = authentication.getAuthorities().stream()
-                .map(role->role.getAuthority())
-                .collect(Collectors.toList());
-        if(!roles.contains("ADMIN")) {
+    public void verifyAuthorities(Member member) {
+        //        멤버의 권한이 admin인지 확인하자.;
+        if(!member.getRoles().contains("ADMIN")) {
             throw new BusinessLogicException(ExceptionCode.ADMIN_ONLY_ACCESS);
         }
     }

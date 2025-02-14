@@ -1,5 +1,6 @@
 package com.springboot.question.dto;
 
+import com.springboot.answer.entity.Answer;
 import com.springboot.question.entity.Question;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,5 +22,7 @@ public class QuestionResponseDto {
     private Question.QuestionStatus questionStatus;
 
     private Question.QuestionPublicStatus questionPublicStatus;
+
+//    private Answer answer;
 
 }

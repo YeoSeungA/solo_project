@@ -23,8 +23,8 @@ public class Answer {
     @ManyToOne
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
-//    Question과 1대 1 관계
-    @OneToOne(/*mappedBy = "answer"*/)
+//    Question과 1대 1 관계 영속성 전이
+    @OneToOne(mappedBy = "answer", cascade = CascadeType.PERSIST)
     private Question question;
 
     @Enumerated(EnumType.STRING)

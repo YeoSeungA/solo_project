@@ -15,4 +15,5 @@ public class AnswerPatchDto {
     private String content;
 
     private Answer.AnswerStatus answerStatus;
+
 }
