@@ -19,9 +19,14 @@ public class AnswerService {
     }
 
     public Answer createAnswer(Answer answer) {
-//        해당 answer가 없는지 확인하는 로직이 필요하다.
+//        답변은 한 건만 등록할 수 있다.
+        if(answer.getQuestion() == null) {
+
+        }
         return null;
     }
+
+
 
 //    검증 로직
     public void verifyExistAnswer(Answer answer) {
