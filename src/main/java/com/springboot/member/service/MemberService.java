@@ -9,6 +9,7 @@ import com.springboot.security.utils.AuthorityUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -121,6 +122,14 @@ public class MemberService {
             throw new BusinessLogicException(ExceptionCode.INACTIVE_MEMBER_FORBIDDEN);
         }
     }
-
+//   Authentication으로 들어온 객체를 통해 memberId를 구해보자.
+    public long memberIdFormAuthentication(Authentication authentication) {
+//        1. authenteication의 email을 구해보자.
+        String username = authentication.getPrincipal().toString();
+//        2. email을 통해 Member 객체를 구해오자.
+        Member member = findByEmailToMember(username);
+//        3.memberId를 반환하자.
+        return member.getMemberId();
+    }
 
 }

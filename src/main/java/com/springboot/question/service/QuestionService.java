@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.springboot.question.entity.Question.QuestionStatus.QUESTION_DELETED;
+
 @Service
 public class QuestionService {
     private final QuestionRepository questionRepository;
@@ -44,9 +46,19 @@ public class QuestionService {
         return saveQuestion;
     }
 //    질문을 수정해보자
-    public Question updateQuestion(Question question) {
+    public Question updateQuestion(Question question,Authentication authentication) {
+//        authentication으로 로그인한 사람이 글의 작성자가 맞는지 id로 비교하자.
+        long memberId = memberService.memberIdFormAuthentication(authentication);
+//        question 작성자의 id
+        long writerId = question.getMember().getMemberId();
+//        둘이 같다면 수정이 가능하고 아니라면 예외를 던지자.
+        if(memberId != writerId) {
+            throw new BusinessLogicException(ExceptionCode.AUTHOR_ONLY_ACCESS);
+        }
+
 //        존재하는 question인지 확인해보자.
         Question findQuestion = verifyFindQuestion(question.getQuestionId());
+
 //        제목이 수정될 수 있다.
         Optional.ofNullable(findQuestion.getTitle())
                 .ifPresent(title -> findQuestion.setTitle(title));
@@ -54,6 +66,13 @@ public class QuestionService {
         Optional.ofNullable(findQuestion.getContent())
                 .ifPresent(content -> findQuestion.setContent(content));
 //        질문 상태가 수정될 수 있다.
+//        QUESTION_ANSWERED 로의 변경은 관리자만 가능하다.
+//    QUESTION_ANSWERED 상태변경이 들어오면, 권한을 확인하자.
+        if(question.getQuestionStatus() == Question.QuestionStatus.QUESTION_ANSWERED) {
+            if(!authentication.getAuthorities().contains("ADMIN")) {
+
+            }
+        }
         Optional.ofNullable(findQuestion.getQuestionStatus())
                 .ifPresent(questionStatus -> findQuestion.setQuestionStatus(questionStatus));
 //        질문의 공개여부가 수정될 수 있다.
@@ -75,8 +94,12 @@ public class QuestionService {
         return question;
     }
 
-    public Page<Question> findQuestions(int page, int size) {
-        return questionRepository.findAll(PageRequest.of(page, size))
+    public Page<Question> findQuestions(int page, int size, String sort) {
+        //        답변도 함께 조회할 수 있다.--> 나중에 구현해보자
+//        삭제상태가 아닌 질문만 조회할 수 있다...??? -- findByStatusNot 메서드 쿼리 기능을 사용해보자
+        return questionRepository.findByQuestionStatusNot(QUESTION_DELETED,
+                (PageRequest.of(page, size,Sort.by("questionId").descending())));
+
     }
 
     public void deleteQuestion(long questionId, Authentication authentication) {
@@ -97,7 +120,7 @@ public class QuestionService {
             throw new BusinessLogicException(ExceptionCode.AUTHOR_ONLY_ACCESS);
         }
 //        질문삭제시, 테이블에서 row가 삭제되는게 아닌 질문 상태값이 바뀐다.
-        question.setQuestionStatus(Question.QuestionStatus.QUESTION_DELETED);
+        question.setQuestionStatus(QUESTION_DELETED);
         questionRepository.save(question);
     }
 
@@ -141,7 +164,7 @@ public class QuestionService {
 //    이미 삭제 상태인 질문은 조회할 수 없다.
     public Question checkQuestionState(long questionId) {
         Question question = verifyFindQuestion(questionId);
-        if(question.getQuestionStatus() == Question.QuestionStatus.QUESTION_DELETED) {
+        if(question.getQuestionStatus() == QUESTION_DELETED) {
             throw new BusinessLogicException(ExceptionCode.QUESTION_NOT_FOUND);
         }
         return question;

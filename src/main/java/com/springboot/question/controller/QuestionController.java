@@ -8,6 +8,7 @@ import com.springboot.question.mapper.QuestionMapper;
 import com.springboot.question.service.QuestionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
+import java.util.List;
 
 @RestController
 @RequestMapping("/v12/questions")
@@ -43,7 +45,8 @@ public class QuestionController {
 
     @PatchMapping("/{question-id}")
     public ResponseEntity patchQuestion(@PathVariable("question-id") @Valid long questionId,
-                                        @Valid @RequestBody QuestionPatchDto questionPatchDto) {
+                                        @Valid @RequestBody QuestionPatchDto questionPatchDto,
+                                        Authentication authentication) {
         questionPatchDto.setQuestionId(questionId);
         Question question = questionService.updateQuestion(questionMapper.questionPatchDtoToQuestion(questionPatchDto));
         QuestionResponseDto questionResponseDto = questionMapper.questionToQuestionResponseDto(question);
@@ -61,11 +64,13 @@ public class QuestionController {
     }
 
     @GetMapping
-    public Page<Question> getQuestions(@Positive @RequestParam int page,
+    public ResponseEntity getQuestions(@Positive @RequestParam int page,
                                        @Positive @RequestParam int size,
                                        @Positive @RequestParam String sort) {
-        Page<Question> questionPage = questionService.findQuestions(page,size, sort);
-        return null;
+        Page<Question> questionPage = questionService.findQuestions(page-1,size,sort);
+        List<Question> questions = questionPage.getContent();
+        List<QuestionResponseDto> questionResponseDtos = questionMapper.questionToQuestionResponseDtos(questions);
+        return new ResponseEntity<>(questionResponseDtos, HttpStatus.OK);
     }
 
     @DeleteMapping("/{question-id}")
