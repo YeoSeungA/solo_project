@@ -38,7 +38,7 @@ public class AnswerService {
         answer.setMember(member);
 //        질문을 구하자!
         Question question = verifyExistAnswer(answer, questionId);
-        answer.setQuestion(question);
+//        answer.setQuestion(question);
 
 //        멤버의 권한이 admin인지 확인하자.
         verifyAuthorities(answer.getMember());
@@ -50,8 +50,9 @@ public class AnswerService {
 //                secret이면 secret으로
             } else {answer.setAnswerStatus(Answer.AnswerStatus.SECRET);}
 //            답변 등록시, 질문의 상태값이 QUESTION_ANSWERED로 변경되야 한다.
-            answer.getQuestion().setQuestionStatus(Question.QuestionStatus.QUESTION_ANSWERED);
+            question.setQuestionStatus(Question.QuestionStatus.QUESTION_ANSWERED);
            Answer result = answerRepository.save(answer);
+           question.setAnswer(result);
            return result;
         } throw new BusinessLogicException(ExceptionCode.ANSWER_EXISTS);
     }
@@ -71,9 +72,6 @@ public class AnswerService {
         Answer saveAnswer = answerRepository.save(findAnswer);
         return saveAnswer;
     }
-
-
-
 //    검증 로직
     public Question verifyExistAnswer(Answer answer, long questionId) {
 //        1. member가 존재하는지 - 존재X 예외
@@ -84,7 +82,7 @@ public class AnswerService {
     }
 //    권한을 갖고 있는가
     public void verifyAuthorities(Member member) {
-        //        멤버의 권한이 admin인지 확인하자.;
+        //        멤버의 권한이 admin인지 확인하자.
         if(!member.getRoles().contains("ADMIN")) {
             throw new BusinessLogicException(ExceptionCode.ADMIN_ONLY_ACCESS);
         }

@@ -23,7 +23,8 @@ public class Answer {
     @ManyToOne
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
-//    Question과 1대 1 관계 영속성 전이
+//    단방향을 하기 위해 Question 필드를 제거했다.
+////    Question과 1대 1 관계 영속성 전이
     @OneToOne(mappedBy = "answer", cascade = CascadeType.PERSIST)
     private Question question;
 

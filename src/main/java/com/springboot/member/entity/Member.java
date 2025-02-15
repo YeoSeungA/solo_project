@@ -27,7 +27,7 @@ public class Member {
     @Column(nullable = false)
     private String password;
 //    Question 리스트
-    @Column(nullable = false)
+//    @Column(nullable = false)
     @OneToMany(mappedBy = "member", cascade = CascadeType.PERSIST)
     private List<Question> questions = new ArrayList<>();
 
@@ -49,10 +49,11 @@ public class Member {
 
 //  question의 입장에서도 연결이 필요하기에 question이 갖고 있는 member에
 //  나 자신인 member를 추가한다.
-    public void addQuestion(Question question) {
+    public void setQuestion(Question question) {
         questions.add(question);
+//        순환참조 방지
         if(question.getMember() != this) {
-            question.addMemberQuestion(this);
+            question.setMember(this);
         }
     }
 

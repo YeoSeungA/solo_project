@@ -1,6 +1,7 @@
 package com.springboot.question.service;
 
 import com.springboot.answer.entity.Answer;
+import com.springboot.answer.service.AnswerService;
 import com.springboot.exception.BusinessLogicException;
 import com.springboot.exception.ExceptionCode;
 import com.springboot.member.entity.Member;
@@ -73,6 +74,13 @@ public class QuestionService {
 //        질문의 공개여부가 수정될 수 있다.
                 Optional.ofNullable(question.getQuestionPublicStatus())
                         .ifPresent(questionPublicStatus -> findQuestion.setQuestionPublicStatus(questionPublicStatus));
+////                quesntion이 비밀글이면 answer도 비밀글로, question이 공개글이면 question도 공개글로 바뀌어야 한다.
+//            if(findQuestion.getAnswer() != null) {
+////                question의 answer을 가져왔다.
+//                Answer answer = questionToAnswer(question);
+//                findQuestion.setAnswer(answer);
+//                findQuestion.getAnswer().setAnswerStatus(question.getAnswer().getAnswerStatus());
+//            }
                 Question patchQuestion = questionRepository.save(findQuestion);
                 return patchQuestion;
             } else {
@@ -166,4 +174,10 @@ public class QuestionService {
         }
         return question;
     }
+////    해당 question의 answer객체를 뽑아보자.
+//    public Answer questionToAnswer (Question question) {
+//        long answerId = question.getAnswer().getAnswerId();
+//        return answer;
+//    }
+
 }

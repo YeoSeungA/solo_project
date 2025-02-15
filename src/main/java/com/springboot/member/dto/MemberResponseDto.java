@@ -1,7 +1,9 @@
 package com.springboot.member.dto;
 
+import com.springboot.answer.dto.AnswerResponseDto;
 import com.springboot.answer.entity.Answer;
 import com.springboot.member.entity.Member;
+import com.springboot.question.dto.QuestionResponseDto;
 import com.springboot.question.entity.Question;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,9 +26,9 @@ public class MemberResponseDto {
 
     private Member.MemberStatus memberStatus;
 //    @Valid
-    private List<Question> questions;
+//    private List<QuestionResponseDto> questions;
 //    @Vaild
-    private List<Answer> answers;
+//    private List<AnswerResponseDto> answers;
 
 ////    questionId만 알아도 question을 불러올 수 있다.
 //    public Question getQuestion() {

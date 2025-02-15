@@ -1,5 +1,6 @@
 package com.springboot.answer.controller;
 
+import com.springboot.answer.dto.AnswerPatchDto;
 import com.springboot.answer.dto.AnswerPostDto;
 import com.springboot.answer.dto.AnswerResponseDto;
 import com.springboot.answer.entity.Answer;
@@ -33,4 +34,17 @@ public class AnswerController {
         AnswerResponseDto answerResponseDto = answerMapper.answerToAnswerResponseDto(answer);
         return new ResponseEntity<>(answerResponseDto, HttpStatus.OK);
     }
+
+    @PatchMapping("/{question-id}/answers/{answer-id}")
+    public ResponseEntity patchAnswer(@PathVariable("question-id") long questionId,
+                                      @PathVariable("answer-id") long answerId,
+                                      @Valid @RequestBody AnswerPatchDto answerPatchDto,
+                                      Authentication authentication) {
+        Answer answer = answerService.updateAnswer(answerMapper.answerPatchToAnswer(answerPatchDto), authentication);
+        AnswerResponseDto answerResponseDto = answerMapper.answerToAnswerResponseDto(answer);
+        return new ResponseEntity<>(answerResponseDto, HttpStatus.OK);
+    }
+
+//    @GetMapping("/{quetion-id}/answers")
+//    public ResponseEntity getAnswer
 }

@@ -32,7 +32,7 @@ public class Question {
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "ANSWER_ID")
     private Answer answer;
 // Views와 다대 일 관계, 영속성 전이는 X. view의 count만 사용하면 되기에.. 필요하면 영속성 전이를 넣어야 한다.
@@ -56,10 +56,11 @@ public class Question {
     private QuestionPublicStatus questionPublicStatus;
 //    member의 입장에서도 연결이 필요하기에
 //    member가 갖고 있는 questions(List)에 나 자신 question을 추가한다.
-    public void addMemberQuestion(Member member) {
+    public void setMember (Member member) {
         this.member = member;
+//        순환참조 방지
         if(!member.getQuestions().contains(this)) {
-            member.addQuestion(this);
+            member.setQuestion(this);
         }
     }
 
@@ -87,5 +88,8 @@ public class Question {
         QuestionPublicStatus(String status) {
             this.status = status;
         }
+    }
+    public void addAnswer(Answer answer) {
+        this.answer = answer;
     }
 }
