@@ -9,6 +9,7 @@ import com.springboot.answer.service.AnswerService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,15 +37,19 @@ public class AnswerController {
     }
 
     @PatchMapping("/{question-id}/answers/{answer-id}")
-    public ResponseEntity patchAnswer(@PathVariable("question-id") long questionId,
-                                      @PathVariable("answer-id") long answerId,
+    public ResponseEntity patchAnswer(@PathVariable("answer-id") long answerId,
                                       @Valid @RequestBody AnswerPatchDto answerPatchDto,
                                       Authentication authentication) {
-        Answer answer = answerService.updateAnswer(answerMapper.answerPatchToAnswer(answerPatchDto), authentication);
+        Answer answer = answerService.updateAnswer(answerId, answerMapper.answerPatchToAnswer(answerPatchDto), authentication);
         AnswerResponseDto answerResponseDto = answerMapper.answerToAnswerResponseDto(answer);
         return new ResponseEntity<>(answerResponseDto, HttpStatus.OK);
     }
 
-//    @GetMapping("/{quetion-id}/answers")
-//    public ResponseEntity getAnswer
+    @DeleteMapping("/{question-id}/answers/{answer-id}")
+    public ResponseEntity deleteAnswer(@PathVariable("answer-id") long answerId,
+                                       Authentication authentication) {
+        answerService.deleteAnswer( answerId, authentication);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
+
 }

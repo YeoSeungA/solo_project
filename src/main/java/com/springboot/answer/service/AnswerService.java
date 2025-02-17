@@ -57,7 +57,8 @@ public class AnswerService {
         } throw new BusinessLogicException(ExceptionCode.ANSWER_EXISTS);
     }
 
-    public Answer updateAnswer(Answer answer, Authentication authentication) {
+    public Answer updateAnswer(long answerId, Answer answer, Authentication authentication) {
+        answer.setAnswerId(answerId);
 //        Member를 뽑자.
         long memberId = memberService.memberIdFormAuthentication(authentication);
         Member member = memberService.findMember(memberId);
@@ -71,6 +72,23 @@ public class AnswerService {
                 .ifPresent(content -> findAnswer.setContent(content));
         Answer saveAnswer = answerRepository.save(findAnswer);
         return saveAnswer;
+    }
+
+    public void deleteAnswer(long answerId, Authentication authentication) {
+//        권한이 있는지 확인해보자
+        long memberId = memberService.memberIdFormAuthentication(authentication);
+        Member member = memberService.verifyFindMember(memberId);
+        if(!member.getRoles().contains("ADMIN")) {
+            throw new BusinessLogicException(ExceptionCode.ADMIN_ONLY_ACCESS);
+        }
+        Answer answer = verifyAnswer(answerId);
+//        Question과의 연결 끊기!
+        if(answer.getQuestion() != null) {
+            answer.getQuestion().setAnswer(null);
+            answer.getQuestion().setQuestionStatus(Question.QuestionStatus.QUESTION_REGISTERED);
+
+        }
+        answerRepository.delete(answer);
     }
 //    검증 로직
     public Question verifyExistAnswer(Answer answer, long questionId) {

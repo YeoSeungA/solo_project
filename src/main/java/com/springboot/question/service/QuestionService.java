@@ -8,11 +8,13 @@ import com.springboot.member.entity.Member;
 import com.springboot.member.service.MemberService;
 import com.springboot.question.entity.Question;
 import com.springboot.question.repository.QuestionRepository;
+import com.springboot.views.entity.Views;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +45,9 @@ public class QuestionService {
 //        question.getMember().setMemberId(member.getMemberId());
 //        long memberId = member.getMemberId();
 //        question.getMember().setMemberId(memberId);
+//        view를 만들자
+        question.setViews(new Views());
+//        like를 만들자
 
         Question saveQuestion = questionRepository.save(question);
         return saveQuestion;
@@ -88,6 +93,7 @@ public class QuestionService {
         }
     }
 
+    @Transactional
     public Question findQuestion(long questionId, Authentication authentication) {
 //        삭제된 질문이거나 없는 질문이면 예외를 던진다.
         Question question = checkQuestionState(questionId);
@@ -95,13 +101,21 @@ public class QuestionService {
         if(question.getQuestionPublicStatus() == Question.QuestionPublicStatus.SECRET) {
             return getSecretQuestion(questionId, authentication);
         }
+//        view count를 올리자
+//        question.setViews(new Views());
+        Views views = question.getViews();
+        int initViewsCount = views.getViewsCount();
+        question.getViews().setViewsCount(initViewsCount + 1);
+        question.setViews(views);
+        questionRepository.save(question);
 //        question이 public이라면 로그인한 회원과 관리자 모두 조회 가능하다.
         return question;
     }
 
     public Page<Question> findQuestions(int page, int size, String sort) {
-        //        답변도 함께 조회할 수 있다.--> 나중에 구현해보자
-//        삭제상태가 아닌 질문만 조회할 수 있다...??? -- findByStatusNot 메서드 쿼리 기능을 사용해보자
+//        답변도 함께 조회할 수 있다.--> 나중에 구현해보자 구현 ok.
+//        정렬해서 조회할수 있어야 한다. --> 다른것을 구현해보고 실행해보자
+//        삭제상태가 아닌 질문만 조회할 수 있다...??? -- findByStatusNot 메서드 쿼리 기능을 사용해보자 ok.
         return questionRepository.findByQuestionStatusNot(QUESTION_DELETED,
                 (PageRequest.of(page, size,Sort.by("questionId").descending())));
 

@@ -1,5 +1,6 @@
 package com.springboot.question.dto;
 
+import com.springboot.answer.dto.AnswerResponseDto;
 import com.springboot.answer.entity.Answer;
 import com.springboot.question.entity.Question;
 import lombok.AllArgsConstructor;
@@ -25,6 +26,8 @@ public class QuestionResponseDto {
 
     private Question.QuestionPublicStatus questionPublicStatus;
 
-//    private Answer answer;
+    private AnswerResponseDto answerResponseDto;
+
+    private long viewsCount;
 
 }

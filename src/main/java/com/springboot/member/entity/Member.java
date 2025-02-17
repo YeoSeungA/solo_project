@@ -33,7 +33,7 @@ public class Member {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.PERSIST)
     private List<Answer> answers = new ArrayList<>();
-//    view와 다대일 관계 . 영속성 전이는 X. count만 알면 되기에
+////    view와 다대일 관계 . 영속성 전이는 X. count만 알면 되기에
     @OneToMany(mappedBy = "member")
     private List<Views> views = new ArrayList<>();
 //    like와 다대 일 관계, 영속성 전이는 X. count만 알면 되기에

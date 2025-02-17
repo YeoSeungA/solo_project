@@ -36,8 +36,12 @@ public class Question {
     @JoinColumn(name = "ANSWER_ID")
     private Answer answer;
 // Views와 다대 일 관계, 영속성 전이는 X. view의 count만 사용하면 되기에.. 필요하면 영속성 전이를 넣어야 한다.
-    @OneToMany(mappedBy = "question")
-    private List<Views> views = new ArrayList<>();
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    private Views views;
+
+    @Column
+    private long viewsCount;
+
 //   Like와 다대 일 관계, 영속성 전이는 X. like의 count 만 사용되게 하자.
     @OneToMany(mappedBy = "question")
     private List<Like> likes = new ArrayList<>();
@@ -92,4 +96,13 @@ public class Question {
     public void addAnswer(Answer answer) {
         this.answer = answer;
     }
+//    view에 대한 set 함수를 만들어 보자.
+    public void setViews(Views views) {
+        this.views = views;
+        if(views.getQuestion() != this) {
+            views.setQuestion(this);
+        }
+    }
+
+
 }
