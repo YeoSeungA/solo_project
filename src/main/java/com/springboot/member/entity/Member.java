@@ -1,7 +1,6 @@
 package com.springboot.member.entity;
 
 import com.springboot.answer.entity.Answer;
-import com.springboot.like.entity.Like;
 import com.springboot.question.entity.Question;
 import com.springboot.views.entity.Views;
 import lombok.Getter;
@@ -36,10 +35,11 @@ public class Member {
 ////    view와 다대일 관계 . 영속성 전이는 X. count만 알면 되기에
     @OneToMany(mappedBy = "member")
     private List<Views> views = new ArrayList<>();
-//    like와 다대 일 관계, 영속성 전이는 X. count만 알면 되기에
-    @OneToMany(mappedBy = "member")
-    private List<Like> like = new ArrayList<>();
-
+////    like와 다대 일 관계, 영속성 전이는 X. count만 알면 되기에
+//    @OneToMany(mappedBy = "member")
+//    private List<Like> like = new ArrayList<>();
+    @Enumerated(EnumType.STRING)
+    private LikeStatus likeStatus= LikeStatus.CANCLE_LIKE;
 // role을 추가한다. (권한)
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles = new ArrayList<>();
@@ -75,5 +75,10 @@ public class Member {
         MemberStatus(String status) {
             this.status = status;
         }
+    }
+
+    public enum LikeStatus {
+        SELECT_LIKE,
+        CANCLE_LIKE
     }
 }

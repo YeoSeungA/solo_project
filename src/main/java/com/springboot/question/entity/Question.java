@@ -39,12 +39,9 @@ public class Question {
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private Views views;
 
-    @Column
-    private long viewsCount;
-
-//   Like와 다대 일 관계, 영속성 전이는 X. like의 count 만 사용되게 하자.
-    @OneToMany(mappedBy = "question")
-    private List<Like> likes = new ArrayList<>();
+//   Like와 일대일관계로 맺자.
+    @OneToOne
+    private Like like;
 
     @Column(nullable = false)
     private int likeCount;

@@ -30,4 +30,6 @@ public class QuestionResponseDto {
 
     private long viewsCount;
 
+    private long likeCount;
+
 }
