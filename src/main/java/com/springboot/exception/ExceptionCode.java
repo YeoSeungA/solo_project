@@ -13,6 +13,7 @@ public enum ExceptionCode {
     ANSWER_EXISTS(409, "Answer exists"),
     ADMIN_ONLY_ACCESS(403,"Only the administrators can access this"),
     CANNOT_CHANGE_QUESTION(400,"This Question is already completed and cannot be edited"),
+    ALREADY_LIKED(409, "You already liked it"),
     NOT_IMPLEMENTATION(501, "Not Implementation"),
     INVALID_MEMBER_STATUS(400, "Invalid member status");
 

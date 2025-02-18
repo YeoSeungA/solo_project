@@ -16,6 +16,8 @@ public class QuestionResponseDto {
 
     private long memberId;
 
+    private Question.QuestionRecentStatus questionRecentStatus;
+
     @NotBlank
     private String title;
 
@@ -26,10 +28,13 @@ public class QuestionResponseDto {
 
     private Question.QuestionPublicStatus questionPublicStatus;
 
+    private LocalDateTime createdAt;
+
     private AnswerResponseDto answerResponseDto;
 
     private long viewsCount;
 
     private long likeCount;
+
 
 }

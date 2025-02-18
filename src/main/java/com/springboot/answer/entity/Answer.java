@@ -1,5 +1,6 @@
 package com.springboot.answer.entity;
 
+import com.springboot.audit.Auditable;
 import com.springboot.member.entity.Member;
 import com.springboot.question.entity.Question;
 import lombok.Getter;
@@ -7,12 +8,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Setter
 @Entity
 @Getter
 @NoArgsConstructor
-public class Answer {
+public class Answer extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long answerId;
@@ -30,6 +32,9 @@ public class Answer {
 
     @Enumerated(EnumType.STRING)
     private AnswerStatus answerStatus;
+
+//    @Column(name = "created_at", nullable = false, updatable = false)
+//    private LocalDateTime createdAt = LocalDateTime.now();
 
     public enum AnswerStatus {
         PUBLIC,

@@ -4,9 +4,11 @@ import com.springboot.member.entity.Member;
 import com.springboot.question.entity.Question;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 
+@Setter
 @Entity
 @Getter
 @NoArgsConstructor
@@ -16,13 +18,13 @@ public class Like {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long likeId;
 
-    @Column(nullable = false)
-    private int likeCount;
+//    @Column(nullable = false)
+//    private int likeCount;
 
     @Enumerated(EnumType.STRING)
     private LikeStatus likeStatus = LikeStatus.LIKE;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "QUESTION_ID")
     private Question question;
 
@@ -32,6 +34,20 @@ public class Like {
 
     public enum LikeStatus {
         LIKE,
-        NOTHING;
+        NONE;
+    }
+
+    public void setQuestion(Question question) {
+        this.question = question;
+        if(!question.getLikeList().contains(this)) {
+            question.setLikes(this);
+        }
+    }
+
+    public void setMember(Member member) {
+        this.member = member;
+        if(!member.getLikes().contains(this)) {
+            member.setLike(this);
+        }
     }
 }

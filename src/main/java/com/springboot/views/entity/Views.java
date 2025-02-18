@@ -18,9 +18,9 @@ public class Views {
     private Long viewsId;
 
     @Column(nullable = false)
-    private int viewsCount;
+    private int viewsCount = 1;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "QUESTION_ID")
     private Question question;
 
@@ -30,8 +30,8 @@ public class Views {
 
     public void setQuestion(Question question) {
         this.question = question;
-        if(question.getViews() != this) {
-            question.setViews(this);
+        if(!question.getViewsList().contains(this)) {
+            question.getViewsList().add(this);
         }
     }
 }

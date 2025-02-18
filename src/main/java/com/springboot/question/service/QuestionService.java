@@ -1,24 +1,32 @@
 package com.springboot.question.service;
 
 import com.springboot.answer.entity.Answer;
-import com.springboot.answer.service.AnswerService;
 import com.springboot.exception.BusinessLogicException;
 import com.springboot.exception.ExceptionCode;
+import com.springboot.like.entity.Like;
 import com.springboot.member.entity.Member;
 import com.springboot.member.service.MemberService;
 import com.springboot.question.entity.Question;
 import com.springboot.question.repository.QuestionRepository;
 import com.springboot.views.entity.Views;
+import com.springboot.views.repository.ViewsRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.swing.text.View;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.springboot.question.entity.Question.QuestionStatus.QUESTION_ANSWERED;
 import static com.springboot.question.entity.Question.QuestionStatus.QUESTION_DELETED;
@@ -26,10 +34,14 @@ import static com.springboot.question.entity.Question.QuestionStatus.QUESTION_DE
 @Service
 public class QuestionService {
     private final QuestionRepository questionRepository;
+    private final ViewsRepository viewsRepository;
     private final MemberService memberService;
 
-    public QuestionService(QuestionRepository questionRepository, MemberService memberService) {
+    public QuestionService(QuestionRepository questionRepository,
+                           ViewsRepository viewsRepository,
+                           MemberService memberService) {
         this.questionRepository = questionRepository;
+        this.viewsRepository = viewsRepository;
         this.memberService = memberService;
     }
 
@@ -42,13 +54,10 @@ public class QuestionService {
 //        emil로 member객체를 찾고 memberId를 뽑아내서 저장하자.
         Member member = memberService.findByEmailToMember((String)authentication.getPrincipal());
         question.setMember(member);
-//        question.getMember().setMemberId(member.getMemberId());
-//        long memberId = member.getMemberId();
-//        question.getMember().setMemberId(memberId);
 //        view를 만들자
-        question.setViews(new Views());
+//        question.setViews(new Views());
 //        like를 만들자
-
+        question.setLikes(new Like());
         Question saveQuestion = questionRepository.save(question);
         return saveQuestion;
     }
@@ -99,25 +108,32 @@ public class QuestionService {
         Question question = checkQuestionState(questionId);
 //        만약 question이 secret이라면 getSecret으로 조회하자.
         if(question.getQuestionPublicStatus() == Question.QuestionPublicStatus.SECRET) {
-            return getSecretQuestion(questionId, authentication);
+            getSecretQuestion(questionId, authentication);
         }
 //        view count를 올리자
-//        question.setViews(new Views());
-        Views views = question.getViews();
-        int initViewsCount = views.getViewsCount();
-        question.getViews().setViewsCount(initViewsCount + 1);
-        question.setViews(views);
+//        2.새로운 Views를 추가
+        viewObjectAdd(question, authentication);
+//        Views views = question.getViewsList()
+        int initViewsCount = question.getViewsCount();
+        question.setViewsCount(initViewsCount + 1);
+//        question.setViews(views);
         questionRepository.save(question);
+
+
 //        question이 public이라면 로그인한 회원과 관리자 모두 조회 가능하다.
         return question;
     }
 
+    @Transactional
     public Page<Question> findQuestions(int page, int size, String sort) {
 //        답변도 함께 조회할 수 있다.--> 나중에 구현해보자 구현 ok.
 //        정렬해서 조회할수 있어야 한다. --> 다른것을 구현해보고 실행해보자
 //        삭제상태가 아닌 질문만 조회할 수 있다...??? -- findByStatusNot 메서드 쿼리 기능을 사용해보자 ok.
-        return questionRepository.findByQuestionStatusNot(QUESTION_DELETED,
+        Page<Question> pageQuestion = questionRepository.findByQuestionStatusNot(QUESTION_DELETED,
                 (PageRequest.of(page, size,Sort.by("questionId").descending())));
+        pageQuestion.stream()
+                .forEach(question-> isRecent(question));
+        return pageQuestion;
 
     }
 
@@ -188,10 +204,27 @@ public class QuestionService {
         }
         return question;
     }
-////    해당 question의 answer객체를 뽑아보자.
-//    public Answer questionToAnswer (Question question) {
-//        long answerId = question.getAnswer().getAnswerId();
-//        return answer;
-//    }
 
+    public void isRecent(Question question) {
+        LocalDate start =  question.getCreatedAt().toLocalDate();
+        LocalDate end = LocalDate.now();
+
+//        만약 start와 end의 차이가 2일 이하라면 true 라면
+        if(Period.between(start, end).getDays() > 2) {
+            question.setQuestionRecentStatus(Question.QuestionRecentStatus.NOMAL);
+        }
+    }
+
+    public Views viewObjectAdd(Question question, Authentication authentication) {
+        //        1.membr를 불러오자.
+        long memberId = memberService.memberIdFormAuthentication(authentication);
+        Member member = memberService.verifyFindMember(memberId);
+
+        Views views = new Views();
+        views.setQuestion(question);
+        views.setMember(member);
+
+        viewsRepository.save(views);
+        return views;
+    }
 }

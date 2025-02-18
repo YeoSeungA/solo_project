@@ -42,7 +42,7 @@ public class MemberDetailsService implements UserDetailsService {
             setPassword(member.getPassword());
             setQuestions(member.getQuestions());
             setViews(member.getViews());
-            setLike(member.getLike());
+            setLikes(member.getLikes());
             setRoles(member.getRoles());
             setMemberStatus(member.getMemberStatus());
         }
