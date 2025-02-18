@@ -34,7 +34,6 @@ public class LikeService {
 
     public Like updateLike(Like like, Authentication authentication) {
 //        삼항연산자를 사용하자.
-
         return null;
     }
 

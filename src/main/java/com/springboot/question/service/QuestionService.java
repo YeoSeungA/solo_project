@@ -4,6 +4,7 @@ import com.springboot.answer.entity.Answer;
 import com.springboot.exception.BusinessLogicException;
 import com.springboot.exception.ExceptionCode;
 import com.springboot.like.entity.Like;
+import com.springboot.like.repository.LikeRepository;
 import com.springboot.member.entity.Member;
 import com.springboot.member.service.MemberService;
 import com.springboot.question.entity.Question;
@@ -35,13 +36,15 @@ import static com.springboot.question.entity.Question.QuestionStatus.QUESTION_DE
 public class QuestionService {
     private final QuestionRepository questionRepository;
     private final ViewsRepository viewsRepository;
+    private final LikeRepository likeRepository;
     private final MemberService memberService;
 
     public QuestionService(QuestionRepository questionRepository,
-                           ViewsRepository viewsRepository,
+                           ViewsRepository viewsRepository, LikeRepository likeRepository,
                            MemberService memberService) {
         this.questionRepository = questionRepository;
         this.viewsRepository = viewsRepository;
+        this.likeRepository = likeRepository;
         this.memberService = memberService;
     }
 
@@ -57,7 +60,10 @@ public class QuestionService {
 //        view를 만들자
 //        question.setViews(new Views());
 //        like를 만들자
-        question.setLikes(new Like());
+        Like questionLike = new Like();
+        question.setLikes(questionLike);
+        questionLike.setMember(member);
+
         Question saveQuestion = questionRepository.save(question);
         return saveQuestion;
     }
@@ -88,13 +94,14 @@ public class QuestionService {
 //        질문의 공개여부가 수정될 수 있다.
                 Optional.ofNullable(question.getQuestionPublicStatus())
                         .ifPresent(questionPublicStatus -> findQuestion.setQuestionPublicStatus(questionPublicStatus));
-////                quesntion이 비밀글이면 answer도 비밀글로, question이 공개글이면 question도 공개글로 바뀌어야 한다.
+//                quesntion이 비밀글이면 answer도 비밀글로, question이 공개글이면 question도 공개글로 바뀌어야 한다.
 //            if(findQuestion.getAnswer() != null) {
-////                question의 answer을 가져왔다.
+//                question의 answer을 가져왔다.
 //                Answer answer = questionToAnswer(question);
 //                findQuestion.setAnswer(answer);
 //                findQuestion.getAnswer().setAnswerStatus(question.getAnswer().getAnswerStatus());
 //            }
+
                 Question patchQuestion = questionRepository.save(findQuestion);
                 return patchQuestion;
             } else {
@@ -117,6 +124,8 @@ public class QuestionService {
         int initViewsCount = question.getViewsCount();
         question.setViewsCount(initViewsCount + 1);
 //        question.setViews(views);
+//        like를 count 해보자
+
         questionRepository.save(question);
 
 
@@ -226,5 +235,10 @@ public class QuestionService {
 
         viewsRepository.save(views);
         return views;
+    }
+//   좋아요 상태를 patch로 수정해보자
+    public void changeLikeStatus(long likeId) {
+        Optional<Like> optionalLike = likeRepository.findById(likeId);
+
     }
 }

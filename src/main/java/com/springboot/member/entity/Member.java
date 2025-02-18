@@ -37,7 +37,7 @@ public class Member {
     @OneToMany(mappedBy = "member")
     private List<Views> views = new ArrayList<>();
 ////    like와 다대 일 관계, 영속성 전이는 X. count만 알면 되기에
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "member", cascade = CascadeType.PERSIST)
     private List<Like> likes = new ArrayList<>();
 // role을 추가한다. (권한)
     @ElementCollection(fetch = FetchType.EAGER)

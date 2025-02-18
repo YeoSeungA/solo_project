@@ -20,9 +20,8 @@ public class Like {
 
 //    @Column(nullable = false)
 //    private int likeCount;
-
-    @Enumerated(EnumType.STRING)
-    private LikeStatus likeStatus = LikeStatus.LIKE;
+    @Enumerated
+    private LikeStatus likeStatus = LikeStatus.NONE;
 
     @ManyToOne
     @JoinColumn(name = "QUESTION_ID")
@@ -31,11 +30,6 @@ public class Like {
     @ManyToOne
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
-
-    public enum LikeStatus {
-        LIKE,
-        NONE;
-    }
 
     public void setQuestion(Question question) {
         this.question = question;
@@ -49,5 +43,10 @@ public class Like {
         if(!member.getLikes().contains(this)) {
             member.setLike(this);
         }
+    }
+
+    public enum LikeStatus {
+        LIKE,
+        NONE
     }
 }
