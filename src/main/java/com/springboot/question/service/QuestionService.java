@@ -236,9 +236,23 @@ public class QuestionService {
         viewsRepository.save(views);
         return views;
     }
-//   좋아요 상태를 patch로 수정해보자
-    public void changeLikeStatus(long likeId) {
+//   일단 좋아요 count를 늘려보자. repository에 접근해서 delete, 생성
+    public void createLike(long likeId, Question question, Member member) {
         Optional<Like> optionalLike = likeRepository.findById(likeId);
+//        like가 없어 새로운 like를 만들자.
+        if(optionalLike == null) {
+            Like like = new Like();
+            like.setLikeId(likeId);
+            like.setMember(member);
+            like.setQuestion(question);
 
+            int initLikeCount = question.getLikeCount();
+            question.setLikeCount(initLikeCount + 1);
+        }
     }
+//     좋아요 토클로 하자.
+    public void toggleLike(Member member, Authentication authentication, Question question) {
+        Optional<Like>
+    }
+
 }

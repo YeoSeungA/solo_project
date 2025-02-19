@@ -18,11 +18,6 @@ public class Like {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long likeId;
 
-//    @Column(nullable = false)
-//    private int likeCount;
-    @Enumerated
-    private LikeStatus likeStatus = LikeStatus.NONE;
-
     @ManyToOne
     @JoinColumn(name = "QUESTION_ID")
     private Question question;
@@ -45,8 +40,4 @@ public class Like {
         }
     }
 
-    public enum LikeStatus {
-        LIKE,
-        NONE
-    }
 }

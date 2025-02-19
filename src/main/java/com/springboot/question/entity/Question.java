@@ -46,6 +46,8 @@ public class Question extends Auditable {
     @OneToMany(mappedBy = "question", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private List<Like> likeList = new ArrayList<>();
 
+    @Column(nullable = false)
+    private int likeCount;
 //    @Column(nullable = false)
 //    private int likeCount;
 //      질문 상태 값 질문 생성시 초기 상태값은 QUESTION_REGISTERED 이다.
