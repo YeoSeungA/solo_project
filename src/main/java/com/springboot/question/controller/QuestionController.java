@@ -7,8 +7,6 @@ import com.springboot.question.entity.Question;
 import com.springboot.question.mapper.QuestionMapper;
 import com.springboot.question.service.QuestionService;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -78,6 +76,13 @@ public class QuestionController {
                                          Authentication authentication) {
         questionService.deleteQuestion(questionId, authentication);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PostMapping("/{question-id}/loves")
+    public ResponseEntity postLoves(@Positive @PathVariable("question-id") long questionId,
+                                    Authentication authentication) {
+        questionService.toggleLike(questionId, authentication);
+        return new ResponseEntity(HttpStatus.OK);
     }
 
 }

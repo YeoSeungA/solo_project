@@ -57,12 +57,6 @@ public class QuestionService {
 //        emil로 member객체를 찾고 memberId를 뽑아내서 저장하자.
         Member member = memberService.findByEmailToMember((String)authentication.getPrincipal());
         question.setMember(member);
-//        view를 만들자
-//        question.setViews(new Views());
-//        like를 만들자
-        Like questionLike = new Like();
-        question.setLikes(questionLike);
-        questionLike.setMember(member);
 
         Question saveQuestion = questionRepository.save(question);
         return saveQuestion;
@@ -236,23 +230,31 @@ public class QuestionService {
         viewsRepository.save(views);
         return views;
     }
-//   일단 좋아요 count를 늘려보자. repository에 접근해서 delete, 생성
-    public void createLike(long likeId, Question question, Member member) {
-        Optional<Like> optionalLike = likeRepository.findById(likeId);
-//        like가 없어 새로운 like를 만들자.
-        if(optionalLike == null) {
-            Like like = new Like();
-            like.setLikeId(likeId);
-            like.setMember(member);
-            like.setQuestion(question);
+//     좋아요 토클로 하자.
+    public void toggleLike(long questionId, Authentication authentication) {
+//         Qusetion을 찾아보자
+        Question question = verifyFindQuestion(questionId);
+        long memberId = memberService.memberIdFormAuthentication(authentication);
+        Member member = memberService.verifyFindMember(memberId);
 
+        Optional<Like> optionalLike = likeRepository.findByQuestionAndMember(question, member);
+        if(optionalLike.isPresent()) {
+            Like like = optionalLike.orElseThrow();
+
+            likeRepository.delete(like);
+            int initLikeCount = question.getLikeCount();
+            question.setLikeCount(initLikeCount - 1);
+            questionRepository.save(question);
+        } else {
+            Like like = new Like();
+            like.setQuestion(question);
+            like.setMember(member);
+
+            likeRepository.save(like);
             int initLikeCount = question.getLikeCount();
             question.setLikeCount(initLikeCount + 1);
+            questionRepository.save(question);
         }
-    }
-//     좋아요 토클로 하자.
-    public void toggleLike(Member member, Authentication authentication, Question question) {
-        Optional<Like>
     }
 
 }
