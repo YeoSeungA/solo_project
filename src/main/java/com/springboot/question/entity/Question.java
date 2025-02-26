@@ -48,8 +48,9 @@ public class Question extends Auditable {
 
     @Column(nullable = false)
     private int likeCount;
-//    @Column(nullable = false)
-//    private int likeCount;
+
+    @Column(length = 50)
+    private String questionImageName;
 //      질문 상태 값 질문 생성시 초기 상태값은 QUESTION_REGISTERED 이다.
     @Enumerated(EnumType.STRING)
     private QuestionStatus questionStatus = QuestionStatus.QUESTION_REGISTERED;

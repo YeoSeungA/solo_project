@@ -19,6 +19,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.swing.text.View;
 import java.time.LocalDate;
@@ -37,26 +38,32 @@ public class QuestionService {
     private final QuestionRepository questionRepository;
     private final ViewsRepository viewsRepository;
     private final LikeRepository likeRepository;
+    private final StorageService storageService;
     private final MemberService memberService;
 
     public QuestionService(QuestionRepository questionRepository,
                            ViewsRepository viewsRepository, LikeRepository likeRepository,
-                           MemberService memberService) {
+                           StorageService storageService, MemberService memberService) {
         this.questionRepository = questionRepository;
         this.viewsRepository = viewsRepository;
         this.likeRepository = likeRepository;
+        this.storageService = storageService;
         this.memberService = memberService;
     }
 
 //    질문을 등록해보자.
-    public Question createQuestion(Question question, Authentication authentication) {
+    public Question createQuestion(Question question, MultipartFile image, Authentication authentication) {
 //        멤버가 존재 + 글을 작성할 수 있는 활동상태인지 검증해 보자.
 //        멤버가 존재하지 않거나 member의 활동상태가 ACTIVE가 아닐때 예외를 던진다.
-//        getMember만 하면 id만
         memberService.checkMemberActive((String)authentication.getPrincipal());
 //        emil로 member객체를 찾고 memberId를 뽑아내서 저장하자.
         Member member = memberService.findByEmailToMember((String)authentication.getPrincipal());
         question.setMember(member);
+//      이미지가 있다면 이미지 정보를 추가하자.
+//        getOriginalFilename() 메서드는 클라이언트가 업로드한 파일의 원래 이름(파일명)을 반환하는 메서드이다. 파일 경로가 아닌 파일명만 반환.
+        question.setQuestionImageName(image.getOriginalFilename());
+//        커피 이미지를 저장하자.
+        storageService.store(image);
 
         Question saveQuestion = questionRepository.save(question);
         return saveQuestion;

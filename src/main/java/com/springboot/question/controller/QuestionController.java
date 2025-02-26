@@ -8,10 +8,12 @@ import com.springboot.question.mapper.QuestionMapper;
 import com.springboot.question.service.QuestionService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
@@ -29,13 +31,17 @@ public class QuestionController {
         this.questionMapper = questionMapper;
         this.questionService = questionService;
     }
-
-    @PostMapping
-    public ResponseEntity postQuestion(@Valid @RequestBody QuestionPostDto questionPostDto,
+//  클라이언트가 JSON 데이터와 이미지 파일을 함께 업로드하면 이를 처리하고 받환한다.
+// JSON 데이터와 파일업로드(multipart/form-data)요청을 모두 받을 수 있다.
+    @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+//    RequestPart는 multipart/form-data 요청에서 특정 부분을 가져와 객체로 변환해준다.
+    public ResponseEntity postQuestion(@Valid @RequestPart QuestionPostDto questionPostDto,
+//                                       MultipartFile 은 Spring에서 파일 업로드를 처리하는 객체이다.
+                                       @RequestPart MultipartFile image,
                                        Authentication authentication) {
 ////        public상태는 대문자로 변환하자.
 //        questionPostDto.getQuestionPublicStatus().toString().toUpperCase();
-        Question question = questionService.createQuestion(questionMapper.questionPostDtoToQuestion(questionPostDto),authentication);
+        Question question = questionService.createQuestion(questionMapper.questionPostDtoToQuestion(questionPostDto),image,authentication);
         QuestionResponseDto questionResponseDto = questionMapper.questionToQuestionResponseDto(question);
 
         return new ResponseEntity<>(questionResponseDto, HttpStatus.CREATED);
