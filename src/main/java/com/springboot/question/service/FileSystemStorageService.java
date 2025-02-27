@@ -11,7 +11,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 //클라이언트가 업로드한 파일을 지정된 디렉토리에 저장하는 기능을 담당한다.
 public class FileSystemStorageService implements StorageService{
-    private final Path rootLocation = Paths.get("C:\\Back\\Image");;
+    private final Path rootLocation = Paths.get("C:\\backend\\Image");;
 
     @Override
     public void store(MultipartFile file) {

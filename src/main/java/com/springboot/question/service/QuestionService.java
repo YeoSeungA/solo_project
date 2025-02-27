@@ -52,7 +52,7 @@ public class QuestionService {
     }
 
 //    질문을 등록해보자.
-    public Question createQuestion(Question question, MultipartFile image, Authentication authentication) {
+    public Question createQuestion(Question question, Optional<MultipartFile> image, Authentication authentication) {
 //        멤버가 존재 + 글을 작성할 수 있는 활동상태인지 검증해 보자.
 //        멤버가 존재하지 않거나 member의 활동상태가 ACTIVE가 아닐때 예외를 던진다.
         memberService.checkMemberActive((String)authentication.getPrincipal());
@@ -61,9 +61,12 @@ public class QuestionService {
         question.setMember(member);
 //      이미지가 있다면 이미지 정보를 추가하자.
 //        getOriginalFilename() 메서드는 클라이언트가 업로드한 파일의 원래 이름(파일명)을 반환하는 메서드이다. 파일 경로가 아닌 파일명만 반환.
-        question.setQuestionImageName(image.getOriginalFilename());
-//        커피 이미지를 저장하자.
-        storageService.store(image);
+        if(image.isPresent()) {
+            MultipartFile postImage = image.orElseThrow();
+            question.setQuestionImageName(postImage.getOriginalFilename());
+//        이미지를 저장하자.
+            storageService.store(postImage);
+        }
 
         Question saveQuestion = questionRepository.save(question);
         return saveQuestion;

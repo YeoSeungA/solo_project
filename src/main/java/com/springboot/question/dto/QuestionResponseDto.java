@@ -28,6 +28,8 @@ public class QuestionResponseDto {
 
     private Question.QuestionPublicStatus questionPublicStatus;
 
+    private String questionImageName;
+
     private LocalDateTime createdAt;
 
     private AnswerResponseDto answerResponseDto;

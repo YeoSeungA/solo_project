@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/v12/questions")
@@ -37,9 +38,9 @@ public class QuestionController {
 //    RequestPart는 multipart/form-data 요청에서 특정 부분을 가져와 객체로 변환해준다.
     public ResponseEntity postQuestion(@Valid @RequestPart QuestionPostDto questionPostDto,
 //                                       MultipartFile 은 Spring에서 파일 업로드를 처리하는 객체이다.
-                                       @RequestPart MultipartFile image,
+                                       @RequestPart Optional<MultipartFile> image,
                                        Authentication authentication) {
-////        public상태는 대문자로 변환하자.
+//        public상태는 대문자로 변환하자.
 //        questionPostDto.getQuestionPublicStatus().toString().toUpperCase();
         Question question = questionService.createQuestion(questionMapper.questionPostDtoToQuestion(questionPostDto),image,authentication);
         QuestionResponseDto questionResponseDto = questionMapper.questionToQuestionResponseDto(question);
