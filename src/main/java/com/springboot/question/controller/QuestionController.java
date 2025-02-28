@@ -71,7 +71,7 @@ public class QuestionController {
     @GetMapping
     public ResponseEntity getQuestions(@Positive @RequestParam int page,
                                        @Positive @RequestParam int size,
-                                       @Positive @RequestParam String sort) {
+                                       @RequestParam QuestionService.SortType sort) {
         Page<Question> questionPage = questionService.findQuestions(page-1,size,sort);
         List<Question> questions = questionPage.getContent();
         List<QuestionResponseDto> questionResponseDtos = questionMapper.questionToQuestionResponseDtos(questions);

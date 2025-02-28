@@ -11,6 +11,7 @@ import com.springboot.question.entity.Question;
 import com.springboot.question.repository.QuestionRepository;
 import com.springboot.views.entity.Views;
 import com.springboot.views.repository.ViewsRepository;
+import lombok.Getter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -138,12 +139,12 @@ public class QuestionService {
     }
 
     @Transactional
-    public Page<Question> findQuestions(int page, int size, String sort) {
+    public Page<Question> findQuestions(int page, int size, SortType sort) {
 //        답변도 함께 조회할 수 있다.--> 나중에 구현해보자 구현 ok.
 //        정렬해서 조회할수 있어야 한다. --> 다른것을 구현해보고 실행해보자
 //        삭제상태가 아닌 질문만 조회할 수 있다...??? -- findByStatusNot 메서드 쿼리 기능을 사용해보자 ok.
         Page<Question> pageQuestion = questionRepository.findByQuestionStatusNot(QUESTION_DELETED,
-                (PageRequest.of(page, size,Sort.by("questionId").descending())));
+                (PageRequest.of(page, size, sort.getSort(sort.getDirection(), sort.getFiled()))));
         pageQuestion.stream()
                 .forEach(question-> isRecent(question));
         return pageQuestion;
@@ -266,5 +267,49 @@ public class QuestionService {
             questionRepository.save(question);
         }
     }
+//    정렬에 대한 메서드 -- 보안에 취약하고 명시적이지 않다.
+//    public Sort howSort(int sort) {
+//        switch (sort) {
+//            case 1:
+//                return Sort.by("questionId").ascending();
+//            case 2:
+//                return Sort.by("likeCount").descending();
+//            case 3:
+//                return Sort.by("likeCount").ascending();
+//            case 4:
+//                return Sort.by("viewsCount").descending();
+//            case 5:
+//                return Sort.by("viewsCount").ascending();
+//        }
+//        return Sort.by("questionId").descending();
+//    }
 
+    public enum SortType {
+        NEWEST("questionId", Sort.Direction.DESC),
+        OLDEST("questionId",Sort.Direction.ASC),
+        MOST_LIKED("likeCount",Sort.Direction.DESC),
+        LEAST_LIKED("likeCount",Sort.Direction.ASC),
+        MOST_VIEWED("viewsCount",Sort.Direction.DESC),
+        LEAST_VIEWED("viewsCount",Sort.Direction.ASC);
+
+        private final String filed;
+        private final Sort.Direction direction;
+
+        SortType(String filed, Sort.Direction direction) {
+            this.filed = filed;
+            this.direction = direction;
+        }
+
+        public Sort getSort(Sort.Direction direction, String filed) {
+            return Sort.by(direction, filed);
+        }
+
+        public String getFiled() {
+            return filed;
+        }
+
+        public Sort.Direction getDirection() {
+            return direction;
+        }
+    }
 }
